@@ -52,8 +52,8 @@
 // 	}
 //
 // Output:
-// {add 0x2341/0x8036 <nil>}
-// {add <nil> YunShield}
+//  {add 0x2341/0x8036 <nil>}
+//  {add <nil> YunShield}
 package discovery
 
 import (
