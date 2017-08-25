@@ -48,7 +48,13 @@ type Monitor struct {
 }
 ----
 
-You can `Start`, `Stop` and `Restart` a Monitor.
+You can `Start`, `Stop` and `Restart` a Monitor, using the specified functions.
+[source, go]
+----
+monitor.Start() // Starts monitoring
+monitor.Stop()  // Stops monitoring
+monitor.Restart // Restarts the monitor (Stop, then Start)
+----
 
 To have the list of devices discovered, you can use (assuming a started monitor `m`):
 
