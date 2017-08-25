@@ -149,7 +149,6 @@ func New(interval time.Duration) *Monitor {
 }
 
 // Start begins the loop that queries the serial ports and the local network.
-// It accepts a cancelable context
 func (m *Monitor) Start() {
 	cc.Run(func(stopSignal chan struct{}) {
 		m.Events = make(chan (Event))
@@ -189,14 +188,16 @@ func (m *Monitor) Start() {
 	})
 }
 
+// Stop stops the monitor, waiting for the last operation
+// to be completed.
 func (m *Monitor) Stop() {
 	if m.stoppable != nil {
 		m.stoppable.Stop()
-		<-m.stoppable.Stopped
 		m.stoppable = nil
 	}
 }
 
+// Restart restarts the monitor.
 func (m *Monitor) Restart() {
 	m.Stop()
 	m.Start()
