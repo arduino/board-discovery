@@ -31,7 +31,7 @@ You can get connected devices (via Serial or Network ports) by using the followi
 [source, go]
 ----
 serialDevices := monitor.Serial()
-networkDevices := monitor.Network()-
+networkDevices := monitor.Network()
 ----
 
 === The Monitor
@@ -83,5 +83,3 @@ type NetworkDevice struct {
 
 type NetworkDevices []*NetworkDevice
 ----
-
-*_ENJOY_*
