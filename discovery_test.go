@@ -47,21 +47,3 @@ func TestUsage(t *testing.T) {
 
 	fmt.Println(monitor)
 }
-
-// TestEvent doesn't really test anything, since we don't have (yet) a way to reproduce hardware. It's useful to test by hand though
-func TestEvents(t *testing.T) {
-	monitor := discovery.New(time.Millisecond)
-	monitor.Start()
-
-	go func() {
-		time.Sleep(10 * time.Second)
-		fmt.Println("stopping")
-		monitor.Stop()
-	}()
-
-	fmt.Println("waiting")
-	for ev := range monitor.Events {
-		fmt.Print("entered")
-		fmt.Println(ev)
-	}
-}

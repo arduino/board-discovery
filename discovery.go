@@ -136,7 +136,6 @@ type Event struct {
 // You can subscribe to the Events channel to get realtime notification of what's changed
 type Monitor struct {
 	Interval time.Duration
-	Events   chan Event
 
 	serial    SerialDevices
 	network   NetworkDevices
@@ -156,8 +155,6 @@ func New(interval time.Duration) *Monitor {
 
 // Start begins the loop that queries the serial ports and the local network.
 func (m *Monitor) Start() {
-	m.Events = make(chan (Event))
-
 	m.stoppable = cc.Run(func(stopSignal chan struct{}) {
 		var done chan bool
 		var stop = false
@@ -201,8 +198,6 @@ func (m *Monitor) Start() {
 			<-done
 			fmt.Print("closing chan")
 			<-done
-			fmt.Print("closing chan")
-			close(m.Events)
 		}()
 	})
 }

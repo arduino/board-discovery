@@ -97,14 +97,14 @@ func (m *Monitor) addSerial(port *serial.Info) {
 		if port == device.Port {
 			changed := dev.merge(device)
 			if changed {
-				m.Events <- Event{Name: "change", SerialDevice: dev}
+				//m.Events <- Event{Name: "change", SerialDevice: dev}
 			}
 			return
 		}
 	}
 
 	m.serial[device.Port] = &device
-	m.Events <- Event{Name: "add", SerialDevice: &device}
+	//m.Events <- Event{Name: "add", SerialDevice: &device}
 }
 
 func (m *Monitor) pruneSerial(ports []*serial.Info) {
@@ -122,7 +122,7 @@ func (m *Monitor) pruneSerial(ports []*serial.Info) {
 	}
 
 	for _, port := range toPrune {
-		m.Events <- Event{Name: "remove", SerialDevice: m.serial[port]}
+		//m.Events <- Event{Name: "remove", SerialDevice: m.serial[port]}
 		delete(m.serial, port)
 	}
 }

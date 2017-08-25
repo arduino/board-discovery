@@ -169,14 +169,14 @@ func (m *Monitor) addNetwork(e *bonjour.ServiceEntry) {
 		if address == device.Address {
 			changed := dev.merge(device)
 			if changed {
-				m.Events <- Event{Name: "change", NetworkDevice: dev}
+				//m.Events <- Event{Name: "change", NetworkDevice: dev}
 			}
 			return
 		}
 	}
 
 	m.network[device.Address] = &device
-	m.Events <- Event{Name: "add", NetworkDevice: &device}
+	//m.Events <- Event{Name: "add", NetworkDevice: &device}
 }
 
 func (m *Monitor) pruneNetwork() {
@@ -188,7 +188,7 @@ func (m *Monitor) pruneNetwork() {
 	}
 
 	for _, port := range toPrune {
-		m.Events <- Event{Name: "remove", NetworkDevice: m.network[port]}
+		//m.Events <- Event{Name: "remove", NetworkDevice: m.network[port]}
 		delete(m.network, port)
 	}
 }
