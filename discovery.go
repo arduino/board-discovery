@@ -59,8 +59,6 @@ import (
 	"fmt"
 	"time"
 
-	"golang.org/x/net/context"
-
 	"github.com/codeclysm/cc"
 	serial "github.com/facchinm/go-serial-native"
 )
@@ -87,7 +85,7 @@ type SerialDevices map[string]*SerialDevice
 func (sds SerialDevices) String() string {
 	ret := ""
 	for _, device := range sds {
-        ret += fmt.Sprintln("    ", device)
+		ret += fmt.Sprintln("    ", device)
 	}
 	return ret
 }
@@ -110,7 +108,7 @@ type NetworkDevices map[string]*NetworkDevice
 func (nds NetworkDevices) String() string {
 	ret := ""
 	for _, device := range nds {
-        ret += fmt.Sprintln("    ", device)
+		ret += fmt.Sprintln("    ", device)
 	}
 	return ret
 }
@@ -152,41 +150,41 @@ func New(interval time.Duration) *Monitor {
 // Start begins the loop that queries the serial ports and the local network.
 // It accepts a cancelable context
 func (m *Monitor) Start() {
-	cc.Run(func (stop chan struct{}) {
+	cc.Run(func(stopSignal chan struct{}) {
 		m.Events = make(chan (Event))
-			var done chan bool
-			var stop = false
-		
-			go func() {
-				<-stop
-				stop = true
-			}()
-		
-			go func() {
-				for {
-					if stop {
-						break
-					}
-					m.serialDiscover()
+		var done chan bool
+		var stop = false
+
+		go func() {
+			<-stopSignal
+			stop = true
+		}()
+
+		go func() {
+			for {
+				if stop {
+					break
 				}
-				done <- true
-			}()
-			go func() {
-				for {
-					if stop {
-						break
-					}
-					m.networkDiscover()
+				m.serialDiscover()
+			}
+			done <- true
+		}()
+		go func() {
+			for {
+				if stop {
+					break
 				}
-				done <- true
-			}()
-		
-			go func() {
-				// We need to wait until both goroutines have finished
-				<-done
-				<-done
-				close(m.Events)
-			}()
+				m.networkDiscover()
+			}
+			done <- true
+		}()
+
+		go func() {
+			// We need to wait until both goroutines have finished
+			<-done
+			<-done
+			close(m.Events)
+		}()
 	})
 }
 
@@ -214,9 +212,9 @@ func (m *Monitor) Network() NetworkDevices {
 }
 
 func (m *Monitor) String() string {
-	return := fmt.Sprintln("DEVICES:") +
-	fmt.Sprintln("  SERIAL:") +
-	fmt.Println(m.serial) +  
-	fmt.Sprintln("  NETWORK:") + 
-	fmt.Sprintln(m.network)
+	return fmt.Sprintln("DEVICES:") +
+		fmt.Sprintln("  SERIAL:") +
+		fmt.Sprintln(m.serial) +
+		fmt.Sprintln("  NETWORK:") +
+		fmt.Sprintln(m.network)
 }
