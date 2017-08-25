@@ -43,9 +43,10 @@ func TestUsage(t *testing.T) {
 	monitor := discovery.New(time.Millisecond)
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	monitor.Start(ctx)
+	monitor.Start()
 
 	time.Sleep(10 * time.Second)
+	monitor.Stop()
 
 	fmt.Println(monitor.Serial())
 	fmt.Println(monitor.Network())
@@ -54,8 +55,12 @@ func TestUsage(t *testing.T) {
 // TestEvent doesn't really test anything, since we don't have (yet) a way to reproduce hardware. It's useful to test by hand though
 func TestEvents(t *testing.T) {
 	monitor := discovery.New(time.Millisecond)
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	monitor.Start(ctx)
+	monitor.Start()
+
+	go func() {
+		time.Sleep(10 * time.Second)
+		monitor.Stop()
+	}()
 
 	for ev := range monitor.Events {
 		fmt.Println(ev)
