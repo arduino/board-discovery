@@ -14,7 +14,7 @@ Then import it to use it:
 import "github.com/arduino/board-discovery"
 ----
 
-====== GODOC can be found link:HERE[]
+====== GODOC can be found link:https://godoc.org/github.com/arduino/board-discovery[HERE]
 
 == Discovering devices
 To discover devices you must first create a new Monitor (specifying the polling interval):
