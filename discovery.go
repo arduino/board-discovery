@@ -187,7 +187,7 @@ func (m *Monitor) Start() {
 				<-done
 				close(m.Events)
 			}()
-	}))
+	})
 }
 
 func (m *Monitor) Stop() {
