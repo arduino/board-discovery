@@ -55,10 +55,13 @@ func TestEvents(t *testing.T) {
 
 	go func() {
 		time.Sleep(10 * time.Second)
+		fmt.Println("stopping")
 		monitor.Stop()
 	}()
 
+	fmt.Println("waiting")
 	for ev := range monitor.Events {
+		fmt.Print("entered")
 		fmt.Println(ev)
 	}
 }

@@ -156,13 +156,15 @@ func New(interval time.Duration) *Monitor {
 
 // Start begins the loop that queries the serial ports and the local network.
 func (m *Monitor) Start() {
+	m.Events = make(chan (Event))
+
 	m.stoppable = cc.Run(func(stopSignal chan struct{}) {
-		m.Events = make(chan (Event))
 		var done chan bool
 		var stop = false
 
 		go func() {
 			<-stopSignal
+			fmt.Println("stop = true")
 			stop = true
 		}()
 
@@ -171,8 +173,12 @@ func (m *Monitor) Start() {
 				if stop {
 					break
 				}
-				m.serialDiscover()
+				err := m.serialDiscover()
+				if err != nil {
+					fmt.Println(err)
+				}
 			}
+			fmt.Println("done <- true")
 			done <- true
 		}()
 		go func() {
@@ -180,15 +186,22 @@ func (m *Monitor) Start() {
 				if stop {
 					break
 				}
-				m.networkDiscover()
+				err := m.networkDiscover()
+				if err != nil {
+					fmt.Println(err)
+				}
 			}
+			fmt.Println("done <- true")
 			done <- true
 		}()
 
 		go func() {
+			fmt.Print("closing chan")
 			// We need to wait until both goroutines have finished
 			<-done
+			fmt.Print("closing chan")
 			<-done
+			fmt.Print("closing chan")
 			close(m.Events)
 		}()
 	})
@@ -199,6 +212,7 @@ func (m *Monitor) Start() {
 func (m *Monitor) Stop() {
 	if m.stoppable != nil {
 		m.stoppable.Stop()
+		<-m.stoppable.Stopped
 		m.stoppable = nil
 	}
 }
