@@ -45,8 +45,7 @@ func TestUsage(t *testing.T) {
 	time.Sleep(10 * time.Second)
 	monitor.Stop()
 
-	fmt.Println(monitor.Serial())
-	fmt.Println(monitor.Network())
+	fmt.Println(monitor)
 }
 
 // TestEvent doesn't really test anything, since we don't have (yet) a way to reproduce hardware. It's useful to test by hand though

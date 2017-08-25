@@ -76,7 +76,7 @@ type SerialDevice struct {
 	Serial       *serial.Info
 }
 
-type SerialDevices []*SerialDevice
+type SerialDevices map[string]*SerialDevice
 ----
 
 `NetworkDevice` represents a device connected via the network:
@@ -89,5 +89,5 @@ type NetworkDevice struct {
 	Port    int
 }
 
-type NetworkDevices []*NetworkDevice
+type NetworkDevices map[string]*NetworkDevice
 ----

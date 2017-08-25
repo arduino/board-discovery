@@ -84,6 +84,9 @@ func (d SerialDevice) String() string {
 type SerialDevices map[string]*SerialDevice
 
 func (sds SerialDevices) String() string {
+	if len(sds) == 0 {
+		return "    <none>"
+	}
 	ret := ""
 	for _, device := range sds {
 		ret += fmt.Sprintln("    ", device)
@@ -107,6 +110,9 @@ func (d NetworkDevice) String() string {
 type NetworkDevices map[string]*NetworkDevice
 
 func (nds NetworkDevices) String() string {
+	if len(nds) == 0 {
+		return "    <none>"
+	}
 	ret := ""
 	for _, device := range nds {
 		ret += fmt.Sprintln("    ", device)
@@ -150,7 +156,7 @@ func New(interval time.Duration) *Monitor {
 
 // Start begins the loop that queries the serial ports and the local network.
 func (m *Monitor) Start() {
-	cc.Run(func(stopSignal chan struct{}) {
+	m.stoppable = cc.Run(func(stopSignal chan struct{}) {
 		m.Events = make(chan (Event))
 		var done chan bool
 		var stop = false
