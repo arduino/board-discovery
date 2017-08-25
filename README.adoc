@@ -6,7 +6,7 @@ This package allows to discover and monitor Arduino boards connected to the netw
 === Getting the package
 [source, bash]
 ----
-$ go get github.com/arduino/borad-discovery
+$ go get github.com/arduino/board-discovery
 ----
 Then import it to use it:
 [source, go]
