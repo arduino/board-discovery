@@ -33,16 +33,12 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/net/context"
-
-	"github.com/arduino/arduino-create-agent/discovery"
+	"github.com/arduino/board-discovery"
 )
 
 // TestUsage doesn't really test anything, since we don't have (yet) a way to reproduce hardware. It's useful to test by hand though
 func TestUsage(t *testing.T) {
 	monitor := discovery.New(time.Millisecond)
-
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	monitor.Start()
 
 	time.Sleep(10 * time.Second)
