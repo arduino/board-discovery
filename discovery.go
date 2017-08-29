@@ -161,7 +161,7 @@ func (m *Monitor) Start() {
 
 		go func() {
 			<-stopSignal
-			fmt.Println("stop = true")
+			//fmt.Println("stop = true")
 			stop = true
 		}()
 
@@ -175,7 +175,7 @@ func (m *Monitor) Start() {
 					fmt.Println(err)
 				}
 			}
-			fmt.Println("done <- true")
+			//fmt.Println("done <- true")
 			done <- true
 		}()
 		go func() {
@@ -188,16 +188,17 @@ func (m *Monitor) Start() {
 					fmt.Println(err)
 				}
 			}
-			fmt.Println("done <- true")
+			//fmt.Println("done <- true")
 			done <- true
 		}()
 
 		go func() {
-			fmt.Print("closing chan")
+			//fmt.Print("closing chan")
 			// We need to wait until both goroutines have finished
 			<-done
-			fmt.Print("closing chan")
+			//fmt.Print("closing chan")
 			<-done
+			//close(m.Events)
 		}()
 	})
 }
