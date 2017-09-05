@@ -76,21 +76,12 @@ type SerialDevice struct {
 }
 
 func (d SerialDevice) String() string {
-<<<<<<< HEAD
 	ret := fmt.Sprintln("VENDOR ID (VID):", d.VendorID) +
 		fmt.Sprintln("   PRODUCT ID (PID):", d.ProductID)
 	if d.SerialNumber != "" {
 		ret += fmt.Sprintln("   SERIAL NUMBER:", d.SerialNumber)
 	}
 	ret += fmt.Sprintln("   CONNECTED ON PORT:", d.Port)
-=======
-	ret := fmt.Sprintln("VENDOR ID (VID): ", d.VendorID) +
-		fmt.Sprintln("   PRODUCT ID (PID): ", d.ProductID)
-	if d.SerialNumber != "" {
-		ret += fmt.Sprintln("   SERIAL NUMBER: ", d.SerialNumber)
-	}
-	ret += fmt.Sprintln("   CONNECTED ON PORT: ", d.Port)
->>>>>>> 1afcaccae2ae84531c552c430f7300d2d0684882
 
 	return ret
 }
