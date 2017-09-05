@@ -57,7 +57,9 @@
 package discovery
 
 import (
+	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/codeclysm/cc"
@@ -74,10 +76,14 @@ type SerialDevice struct {
 }
 
 func (d SerialDevice) String() string {
+	ret := fmt.Sprintln("VENDOR ID (VID):", d.VendorID) +
+		fmt.Sprintln("   PRODUCT ID (PID):", d.ProductID)
 	if d.SerialNumber != "" {
-		return fmt.Sprintf(`%s/%s/%s`, d.VendorID, d.ProductID, d.SerialNumber)
+		ret += fmt.Sprintln("   SERIAL NUMBER:", d.SerialNumber)
 	}
-	return fmt.Sprintf(`%s/%s`, d.VendorID, d.ProductID)
+	ret += fmt.Sprintln("   CONNECTED ON PORT:", d.Port)
+
+	return ret
 }
 
 //SerialDevices is a list of currently connected devices to the computer
@@ -89,9 +95,20 @@ func (sds SerialDevices) String() string {
 	}
 	ret := ""
 	for _, device := range sds {
-		ret += fmt.Sprintln("    ", device)
+		ret += fmt.Sprintln(" -", device)
 	}
 	return ret
+}
+
+// MarshalJSON allows to convert this object to a JSON string.
+func (sds SerialDevices) MarshalJSON() ([]byte, error) {
+	temp := make([]*SerialDevice, len(sds))
+	i := 0
+	for _, item := range sds {
+		temp[i] = item
+		i++
+	}
+	return json.Marshal(temp)
 }
 
 // NetworkDevice is something connected to the Network Ports
@@ -103,7 +120,9 @@ type NetworkDevice struct {
 }
 
 func (d NetworkDevice) String() string {
-	return d.Name
+	return fmt.Sprintln("NAME:", d.Name) +
+		fmt.Sprintln("   IP ADDRESS:", d.Address) +
+		fmt.Sprintln("   PORT:", d.Port)
 }
 
 //NetworkDevices is a list of currently connected devices to the computer
@@ -115,9 +134,20 @@ func (nds NetworkDevices) String() string {
 	}
 	ret := ""
 	for _, device := range nds {
-		ret += fmt.Sprintln("    ", device)
+		ret += fmt.Sprintln(" -", device)
 	}
 	return ret
+}
+
+// MarshalJSON allows to convert this object to a JSON string.
+func (nds NetworkDevices) MarshalJSON() ([]byte, error) {
+	temp := make([]*NetworkDevice, len(nds))
+	i := 0
+	for _, item := range nds {
+		temp[i] = item
+		i++
+	}
+	return json.Marshal(temp)
 }
 
 // Event tells you that something has changed in the list of connected devices.
@@ -142,6 +172,21 @@ type Monitor struct {
 	stoppable *cc.Stoppable
 }
 
+// MarshalJSON allows a monitor to be parsed as a JSON object.
+func (m Monitor) MarshalJSON() ([]byte, error) {
+	type DevicesList struct {
+		Serial  SerialDevices  `json:"serial,required"`
+		Network NetworkDevices `json:"network,required"`
+	}
+	type MarshallableMonitor struct {
+		Devices DevicesList `json:"devices"`
+	}
+
+	return json.Marshal(MarshallableMonitor{
+		Devices: DevicesList{Serial: m.serial, Network: m.network},
+	})
+}
+
 // New Creates a new monitor that can start querying the serial ports and
 // the local network for devices
 func New(interval time.Duration) *Monitor {
@@ -155,52 +200,23 @@ func New(interval time.Duration) *Monitor {
 
 // Start begins the loop that queries the serial ports and the local network.
 func (m *Monitor) Start() {
-	m.stoppable = cc.Run(func(stopSignal chan struct{}) {
-		var done chan bool
-		var stop = false
-
-		go func() {
-			<-stopSignal
-			//fmt.Println("stop = true")
-			stop = true
-		}()
-
-		go func() {
+	monitorStopFunc := func(monitorFunc func() error) func(stopSignal chan struct{}) {
+		return func(stopSignal chan struct{}) {
 			for {
-				if stop {
-					break
-				}
-				err := m.serialDiscover()
-				if err != nil {
-					fmt.Println(err)
+				select {
+				case <-stopSignal:
+					return
+				default:
+					monitorFunc()
 				}
 			}
-			//fmt.Println("done <- true")
-			done <- true
-		}()
-		go func() {
-			for {
-				if stop {
-					break
-				}
-				err := m.networkDiscover()
-				if err != nil {
-					fmt.Println(err)
-				}
-			}
-			//fmt.Println("done <- true")
-			done <- true
-		}()
+		}
+	}
 
-		go func() {
-			//fmt.Print("closing chan")
-			// We need to wait until both goroutines have finished
-			<-done
-			//fmt.Print("closing chan")
-			<-done
-			//close(m.Events)
-		}()
-	})
+	monitorSerial := monitorStopFunc(m.serialDiscover)
+	monitorNetwork := monitorStopFunc(m.networkDiscover)
+
+	m.stoppable = cc.Run(monitorSerial, monitorNetwork)
 }
 
 // Stop stops the monitor, waiting for the last operation
@@ -229,10 +245,10 @@ func (m *Monitor) Network() NetworkDevices {
 	return m.network
 }
 
-func (m *Monitor) String() string {
-	return fmt.Sprintln("DEVICES:") +
+func (m Monitor) String() string {
+	return strings.TrimSpace(fmt.Sprintln("DEVICES:") +
 		fmt.Sprintln("  SERIAL:") +
 		fmt.Sprintln(m.serial) +
 		fmt.Sprintln("  NETWORK:") +
-		fmt.Sprintln(m.network)
+		fmt.Sprintln(m.network))
 }
