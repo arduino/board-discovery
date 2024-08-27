@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"github.com/juju/errors"
-	"go.bug.st/serial.v1/enumerator"
+	"go.bug.st/serial/enumerator"
 )
 
 // Merge updates the device with the new one, returning false if the operation
