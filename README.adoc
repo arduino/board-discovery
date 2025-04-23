@@ -1,6 +1,9 @@
 = Arduino Board Discovery (Golang)
 Alessandro Sanino <a.sanino@bcmi-labs.cc>
 
+**IMPORTANT: this repo has been archived** +
+The `board-discovery` project has been superseded by the https://github.com/arduino/pluggable-discovery-protocol-handler[pluggable-discovery-protocol-handler], more directly by the https://github.com/arduino/serial-discovery[serial] and https://github.com/arduino/mdns-discovery[mdns] discovery plugins.
+
 This package allows to discover and monitor Arduino boards connected to the network or the serial ports.
 
 === Getting the package
